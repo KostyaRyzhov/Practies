@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from "rxjs";
+import {Page} from "../Page";
 
 
 export class Product {
@@ -27,4 +28,17 @@ export class HttpService {
   updReq(product: Product, id:number): Observable<Product>{
     return  this.http.post<Product>("http://localhost:8080/hello/update/" + id.toString(), product)
   }
+
+  pageReq(page: Page): Observable<Product[]> {
+    return this.http.post<Product[]>("http://localhost:8080/hello/getPage", page)
+  }
+
+  filterReq(product: Product, str: string): Observable<Product[]>{
+    return this.http.post<Product[]>("http://localhost:8080/hello/"+str+"/filter", product);
+  }
+
+  countReq(count: number): Observable<number>{
+    return this.http.post<number>("http://localhost:8080/hello/getCount",count);
+  }
+
 }

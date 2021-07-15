@@ -1,16 +1,45 @@
-<input id="productId" name=productId type="number" value="Input product id" [formControl]="cID" style="width: 24.5%;">
-<input id="productName" type="text" value="Input product name" [formControl]="cName"
-       style="margin-left: 0.3%;width: 24%;">
-<input id="productPrice" type="number" value="Input product price" [formControl]="cPrice" onclick="changeInput()"
-       style="margin-left: 0.35%;width: 24%;">
-<input id="productColor" type="text" value="Input product color" [formControl]="cColor"
-       style="margin-left: 1%;width: 24%;">
-<input id="newName" type="text" value="Input product color" [formControl]="nName"
-       style="margin-left: 1%;width: 24%;">
-<input id="newPrice" type="text" value="Input product color" [formControl]="nPrice"
-       style="margin-left: 1%;width: 24%;">
-<input id="newColor" type="text" value="Input product color" [formControl]="nColor"
-       style="margin-left: 1%;width: 24%;">
+<input id="productId" name=productId type="number" placeholder="Id" [formControl]="cID" style="width: 20%;">
+<input id="productName" type="text" placeholder="Name" [formControl]="cName"
+       style="margin-left: 0.3%;width: 20%;">
+<input id="productPrice" type="number" placeholder="Price" [formControl]="cPrice" onclick="changeInput()"
+       style="margin-left: 0.3%;width: 20%;">
+<input id="productColor" type="text" placeholder="Color" [formControl]="cColor"
+       style="margin-left: 0.3%;width: 20%;">
+<input id="newName" type="text" placeholder="Name" [formControl]="nName"
+       style="margin-top: 0.3%; width: 20%; ">
+<input id="newPrice" type="text" placeholder="Price" [formControl]="nPrice"
+       style="margin-left: 0.3%;width: 20%;">
+<input id="newColor" type="text" placeholder="Color" [formControl]="nColor"
+       style="margin-left: 0.3%;width: 20%;"><br>
+<input id="filterId" name=productId type="number" placeholder="Id" [formControl]="fID"
+       style="margin-top: 0.3% ;width: 20%;">
+<select [formControl]="sId">
+  <option >Точный поиск</option>
+  <option >Больше значения</option>
+  <option >Меньше значения</option>
+</select><br>
+<input id="filterName" type="text" placeholder="Name" [formControl]="fName"
+       style="margin-top: 0.3%; width: 20%;">
+<select [formControl]="sName">
+  <option>Точный поиск</option>
+  <option>Поиск по началу</option>
+  <option>Поиск по середине</option>
+  <option>Поиск по окончанию</option>
+</select><br>
+<input id="filterPrice" type="number" placeholder="Price" [formControl]="fPrice"
+       style="margin-top: 0.3%;width: 20%;">
+<select [formControl]="sPrice">
+  <option >Точный поиск</option>
+  <option >Больше значения</option>
+  <option >Меньше значения</option>
+</select><br>
+<input id="filterColor" type="text" placeholder="Color" [formControl]="fColor" style="margin-top: 0.3%;width: 20%">
+<select [formControl]="sColor" >
+  <option>Точный поиск</option>
+  <option>Поиск по началу</option>
+  <option>Поиск по середине</option>
+  <option>Поиск по окончанию</option>
+</select><br>
 <button style="margin-top: 30px;margin-left: 10px" (click)="sendJSON()">
   Add
 </button>
@@ -19,12 +48,12 @@
   Search with parameters
 </button>
 
-<button style="margin-top: 30px;margin-left: 10px" (click)="getAll()">
+<button style="margin-top: 30px;margin-left: 10px" (click)="setPage(page)">
   GetAll
 </button>
 
-<button style="margin-top: 30px;margin-left: 10px">
-  GetOne
+<button style="margin-top: 30px;margin-left: 10px" (click)="filt()" >
+  Filter
 </button>
 
 <button style="margin-top: 30px;margin-left: 10px" (click)="delRequest()">
@@ -33,6 +62,13 @@
 
 <button style="margin-top: 30px;margin-left: 10px" (click)="updRequest()">
   update
+</button>
+
+<button style="margin-top: 30px;margin-left: 10px" (click)="addTestBase()">
+  AddTestBase
+</button>
+<button style="margin-top: 30px;margin-left: 10px" (click)="cleanFilter()">
+  CleanFilter
 </button>
 
 <div>
@@ -45,32 +81,37 @@
     [rows]="rows"
     [selected]="selected"
     [selectionType]="SelectionType.single"
+    [externalPaging]="true"
+    [count]="page.count"
+    [offset]="page.offset"
+    [limit]="page.elCount"
+    (page)="setPage($event)"
   >
-        <ngx-datatable-column name="id" [flexGrow]="0.5">
-          <ng-template let-value="value" ngx-datatable-cell-template>
-            {{ value }}
-          </ng-template>
-        </ngx-datatable-column>
-        <!--<ngx-datatable-column name="id" [flexGrow]="1">
-          <ng-template let-value="value" ngx-datatable-cell-template>
-            {{ value }}
-          </ng-template>
-        </ngx-datatable-column>-->
-        <ngx-datatable-column name="product_name" [flexGrow]="1">
-          <ng-template let-value="value" ngx-datatable-cell-template>
-            {{ value }}
-          </ng-template>
-        </ngx-datatable-column>
-        <ngx-datatable-column name="product_price" [flexGrow]="1">
-          <ng-template let-value="value" ngx-datatable-cell-template>
-            {{ value }}
-          </ng-template>
-        </ngx-datatable-column>
-        <ngx-datatable-column name="product_color" [flexGrow]="1">
-          <ng-template let-value="value" ngx-datatable-cell-template>
-            {{ value }}
-          </ng-template>
-        </ngx-datatable-column>
+    <ngx-datatable-column name="id" [flexGrow]="0.5">
+      <ng-template let-value="value" ngx-datatable-cell-template>
+        {{ value }}
+      </ng-template>
+    </ngx-datatable-column>
+    <!--<ngx-datatable-column name="id" [flexGrow]="1">
+      <ng-template let-value="value" ngx-datatable-cell-template>
+        {{ value }}
+      </ng-template>
+    </ngx-datatable-column>-->
+    <ngx-datatable-column name="product_name" [flexGrow]="1">
+      <ng-template let-value="value" ngx-datatable-cell-template>
+        {{ value }}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column name="product_price" [flexGrow]="1">
+      <ng-template let-value="value" ngx-datatable-cell-template>
+        {{ value }}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column name="product_color" [flexGrow]="1">
+      <ng-template let-value="value" ngx-datatable-cell-template>
+        {{ value }}
+      </ng-template>
+    </ngx-datatable-column>
   </ngx-datatable>
 </div>
 
